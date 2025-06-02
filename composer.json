@@ -1,0 +1,15 @@
+{
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "require": {
+        "php": "7.4.33",              
+        "twig/twig": "^3.11"          
+    },
+    "require-dev": {
+        "symfony/var-dumper": "^5.4", 
+        "phpunit/phpunit": "^9.5"    
+    }
+}
