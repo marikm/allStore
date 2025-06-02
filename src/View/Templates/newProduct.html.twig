@@ -1,0 +1,135 @@
+{% extends "base.html.twig" %}
+
+{% block content %}
+<h1 class="h3 mb-3 font-weight-normal">Cadastro de Produto</h1>
+<form class="form-signin" action="" method="post">
+    <!-- Descrição do Produto -->
+    <div class="form-group row">
+        <label for="prod_descricao" class="col-sm-2 col-form-label">Descrição:</label>
+        <div class="col-sm-5">
+            <input type="text" class="form-control" name="prod_descricao" id="prod_descricao" 
+                   placeholder="Nome do produto" required autofocus/>
+        </div>
+    </div>
+
+    <!-- Valor Unitário -->
+    <div class="form-group row">
+        <label for="prod_vlr_un" class="col-sm-2 col-form-label">Valor Unitário:</label>
+        <div class="col-sm-3">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">R$</span>
+                </div>
+                <input type="number" step="0.01" class="form-control" name="prod_vlr_un" id="prod_vlr_un" 
+                       placeholder="0.00" required/>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cor -->
+    <div class="form-group row">
+        <label for="prod_cor" class="col-sm-2 col-form-label">Cor:</label>
+        <div class="col-sm-3">
+            <input type="text" class="form-control" name="prod_cor" id="prod_cor" 
+                   placeholder="Cor do produto" required/>
+        </div>
+    </div>
+
+    <!-- Gênero -->
+    <div class="form-group row">
+        <label for="prod_genero" class="col-sm-2 col-form-label">Gênero:</label>
+        <div class="col-sm-3">
+            <select class="form-control" name="prod_genero" id="prod_genero" required>
+                <option value="">Selecione...</option>
+                <option value="masculino">Masculino</option>
+                <option value="feminino">Feminino</option>
+                <option value="unissex">Unissex</option>
+                <option value="infantil">Infantil</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Marca -->
+    <div class="form-group row">
+        <label for="prod_idmarcas" class="col-sm-2 col-form-label">Marca:</label>
+        <div class="col-sm-3">
+            <select class="form-control" name="prod_idmarcas" id="prod_idmarcas" required>
+                <option value="">Selecione a marca</option>
+                <!-- Opções seriam preenchidas dinamicamente -->
+                <option value="1">Nike</option>
+                <option value="2">Adidas</option>
+                <option value="3">Puma</option>
+                <!-- Adicionar outras marcas conforme necessário -->
+            </select>
+        </div>
+    </div>
+
+    <!-- Grupo -->
+    <div class="form-group row">
+        <label for="prod_idgrupos" class="col-sm-2 col-form-label">Grupo:</label>
+        <div class="col-sm-3">
+            <select class="form-control" name="prod_idgrupos" id="prod_idgrupos" required>
+                <option value="">Selecione o grupo</option>
+                <!-- Opções seriam preenchidas dinamicamente -->
+                <option value="1">Camisetas</option>
+                <option value="2">Calças</option>
+                <option value="3">Tênis</option>
+                <!-- Adicionar outros grupos conforme necessário -->
+            </select>
+        </div>
+    </div>
+
+    <!-- Subgrupo -->
+    <div class="form-group row">
+        <label for="prod_idsubgrupos" class="col-sm-2 col-form-label">Subgrupo:</label>
+        <div class="col-sm-3">
+            <select class="form-control" name="prod_idsubgrupos" id="prod_idsubgrupos" required>
+                <option value="">Selecione o subgrupo</option>
+                <!-- Opções seriam preenchidas dinamicamente baseadas no grupo selecionado -->
+                <option value="1">Camiseta Básica</option>
+                <option value="2">Camiseta Polo</option>
+                <option value="3">Calça Jeans</option>
+                <!-- Adicionar outros subgrupos conforme necessário -->
+            </select>
+        </div>
+    </div>
+
+    <!-- Botão de Submit -->
+    <div class="form-group row">
+        <div class="col-sm-5 offset-sm-2">
+            <button type="submit" class="btn btn-primary">Cadastrar Produto</button>
+            {# ver esse botao <a href="{{ path('lista_produtos') }}" class="btn btn-secondary ml-2">Cancelar</a> #}
+        </div>
+    </div>
+</form>
+
+<!-- Adicione scripts JS se necessário -->
+{% block javascripts %}
+<script>
+// Exemplo de script para carregar subgrupos dinamicamente
+document.getElementById('prod_idgrupos').addEventListener('change', function() {
+    const grupoId = this.value;
+    const subgrupoSelect = document.getElementById('prod_idsubgrupos');
+    
+    // Limpa opções atuais
+    subgrupoSelect.innerHTML = '<option value="">Selecione o subgrupo</option>';
+    
+    if (grupoId) {
+        // Aqui você faria uma requisição AJAX para buscar os subgrupos
+        // Exemplo simplificado:
+        fetch(`/api/subgrupos/${grupoId}`)
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(subgrupo => {
+                    const option = document.createElement('option');
+                    option.value = subgrupo.id;
+                    option.textContent = subgrupo.nome;
+                    subgrupoSelect.appendChild(option);
+                });
+            });
+    }
+});
+</script>
+{% endblock %}
+
+{% endblock %}
