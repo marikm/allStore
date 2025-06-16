@@ -1,0 +1,155 @@
+{% extends "base.html.twig" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 font-weight-normal">Lista de Grupos</h1>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newGroupModal">
+            <i class="bi bi-plus-circle"></i> Novo Grupo
+        </button>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="text-nowrap">Código</th>
+                            <th>Descrição</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in data.grupos %}   
+                        <tr>
+                            <td class="fw-bold">{{ item.idgrupos }}</td>
+                            <td id="idGroup_{{ item.idgrupos }}">{{ item.grupo_descricao }}</td>
+                            <td class="text-end">
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <button class="btn btn-outline-primary" value="{{ item.idgrupos }}" name="idLinha" onclick="editGroup({{ item.idgrupos}})">
+                                        <i class="bi bi-pencil"></i> Editar
+                                    </button>
+                                    <button class="btn btn-outline-danger" onclick="deleteGroup({{ item.idgrupos}})">
+                                        <i class="bi bi-trash"></i> Excluir
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Cadastro -->
+<div class="modal fade" id="newGroupModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="bi bi-tags"></i> Cadastrar Grupo</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form class="form-register" id="form-register"  action="" method="post">
+                <input type="hidden" name="operacao" id="operacao" value="insertGroup">
+
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="grupo_descricao" class="form-label">Descrição do Grupo</label>
+                        <input type="text" class="form-control" name="grupo_descricao" id="grupo_descricao" 
+                            placeholder="Digite o nome do grupo" required autofocus>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Salvar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{# Modal para editar Grupo #}
+
+<div class="modal fade" id="editGroupModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title"><i class="bi bi-tags"></i> Editar Registro</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form class="form-register" action="" method="post">
+                <input type="hidden" name="idgrupos_modal" id="idgrupos_modal">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="grupo_descricao_modal" class="form-label">Descrição do Grupo</label>
+                            <input type="text" class="form-control" name="grupo_descricao_modal" id="grupo_descricao_modal" 
+                                 placeholder="Digite o nome do grupo" required autofocus >
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary" >
+                            <i class="bi bi-save"></i> Salvar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% block javascripts %}
+<script>
+    function editGroup(id) {
+        var id_cadastro = $("#idgrupos_modal").val(id);
+        var editModal = new bootstrap.Modal(document.getElementById('editGroupModal'));
+
+        $.post("Grupos", 
+            {
+                operacao: 'getGroupDescription', 
+                id_cadastro: id 
+            },
+            function(data) {
+                $("#grupo_descricao_modal").val(data);
+            }, "html");
+
+            editModal.show();
+
+        
+        $('#editGroupModal').submit(function() {
+            var grupo_descricao_modal = $("#grupo_descricao_modal").val();
+
+            $.post("Grupos", 
+            {operacao: 'updateGroup', 
+            id_cadastro: id, 
+            descricao: grupo_descricao_modal  
+            },
+        function(data){
+            alert(data)
+        }, "html");
+            });
+    }
+
+    function deleteGroup(id) {
+        var id = id;
+        $.post("Grupos", 
+            {operacao: 'deleteGroup', 
+            id_cadastro: id
+            },
+        function(data){
+            alert(data);
+            location.reload(); // atualiza pagina
+        }, "html");
+    }
+</script>
+{% endblock %}
+
+{% endblock %}

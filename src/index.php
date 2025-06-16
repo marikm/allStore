@@ -1,25 +1,37 @@
 <?php 
-    require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
-    use App\Utils\Routes;
-    use App\Utils\TwigUtils;
+use App\Utils\Routes;
+use App\Utils\TwigUtils;
+use TheSeer\Tokenizer\Exception;
 
-    
-    $routes = new Routes(); // cria novo objeto Routes
-   
-    if(class_exists($routes->controller)) { // existe controller para esse objeto?
-        $controllerInstance = new $routes->controller; // atribui a controllerInstance o array controller do routes 
+try {
+    $routes = new Routes();
+    // var_dump(class_exists('App\Controller\GroupController'));
+    // var_dump($routes->controller);
+    // Verifica e instancia o controller
+    if (!class_exists($routes->controller)) {
+        throw new Exception("Controller {$routes->controller} não encontrado!");
     }
     
-    $data = $controllerInstance->index(); // retorna o conteudo do controller
-  
-    $twig = new TwigUtils();
-//     echo "<pre>";
-//     print_r($routes);
-//     echo "</pre>";
+    $controller = new $routes->controller();
     
-// exit;
+    // Verifica se o método index existe
+    if (!method_exists($controller, 'index')) {
+        throw new Exception("Método index() não existe no controller {$routes->controller}!");
+    }
+    
+    // Obtém os dados do controller
+    $data = $controller->index();
+    
+    // Renderiza o template Twig
+    $twig = new TwigUtils();
+
     echo $twig->render($routes->template, [
         'routes' => $routes,
         'data' => $data,
     ]);
+
+} catch (Exception $e) {
+    die("Erro: " . $e->getMessage());
+}

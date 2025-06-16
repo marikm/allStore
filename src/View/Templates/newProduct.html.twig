@@ -1,18 +1,68 @@
 {% extends "base.html.twig" %}
 
 {% block content %}
-<h1 class="h3 mb-3 font-weight-normal">Cadastro de Produto</h1>
-<form class="form-signin" action="" method="post">
-    <!-- Descrição do Produto -->
-    <div class="form-group row">
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 font-weight-normal">Lista de Produtos</h1>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newClotheModal">
+            <i class="bi bi-plus-circle"></i> Novo Produto
+        </button>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="text-nowrap">Código</th>
+                            <th>Descrição</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in data.brands %}   
+                        <tr>
+                            <td class="fw-bold">{{ item.idmarcas }}</td>
+                            <td id="idBrand_{{ item.idmarcas }}">{{ item.marca_descricao }}</td>
+                            <td class="text-end">
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <button class="btn btn-outline-primary" value="{{ item.idmarcas }}" name="idLinha" onclick="editBrand({{ item.idmarcas}})">
+                                        <i class="bi bi-pencil"></i> Editar
+                                    </button>
+                                    <button class="btn btn-outline-danger" onclick="deleteGroup({{ item.idmarcas}})">
+                                        <i class="bi bi-trash"></i> Excluir
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal de Cadastro -->
+<div class="modal fade" id="newClotheModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="bi bi-tags"></i> Cadastrar Roupa</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form class="form-register" id="form-register"  action="" method="post">
+                <input type="hidden" name="operation" id="operation" value="insertClothe">
+
+                 <div class="form-group row">
         <label for="prod_descricao" class="col-sm-2 col-form-label">Descrição:</label>
         <div class="col-sm-5">
             <input type="text" class="form-control" name="prod_descricao" id="prod_descricao" 
                    placeholder="Nome do produto" required autofocus/>
         </div>
     </div>
-
-    <!-- Valor Unitário -->
     <div class="form-group row">
         <label for="prod_vlr_un" class="col-sm-2 col-form-label">Valor Unitário:</label>
         <div class="col-sm-3">
@@ -25,8 +75,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Cor -->
     <div class="form-group row">
         <label for="prod_cor" class="col-sm-2 col-form-label">Cor:</label>
         <div class="col-sm-3">
@@ -34,8 +82,6 @@
                    placeholder="Cor do produto" required/>
         </div>
     </div>
-
-    <!-- Gênero -->
     <div class="form-group row">
         <label for="prod_genero" class="col-sm-2 col-form-label">Gênero:</label>
         <div class="col-sm-3">
@@ -44,92 +90,54 @@
                 <option value="masculino">Masculino</option>
                 <option value="feminino">Feminino</option>
                 <option value="unissex">Unissex</option>
-                <option value="infantil">Infantil</option>
+                <option value="infantil">Infantil</option>  
             </select>
         </div>
-    </div>
-
-    <!-- Marca -->
+ 
+    </div> 
     <div class="form-group row">
         <label for="prod_idmarcas" class="col-sm-2 col-form-label">Marca:</label>
         <div class="col-sm-3">
             <select class="form-control" name="prod_idmarcas" id="prod_idmarcas" required>
                 <option value="">Selecione a marca</option>
-                <!-- Opções seriam preenchidas dinamicamente -->
-                <option value="1">Nike</option>
-                <option value="2">Adidas</option>
-                <option value="3">Puma</option>
-                <!-- Adicionar outras marcas conforme necessário -->
+                {% for marca in data.marcas %}
+                    <option value="{{ marca.idmarcas }}">{{ marca.marca_descricao }}</option>
+                {% endfor %}
             </select>
         </div>
+         <div class="col-sm-3">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button"><a href='{{routes.routes.Marcas.name}}'>+</a></button>
+            </div>
+        </div>
     </div>
-
-    <!-- Grupo -->
     <div class="form-group row">
         <label for="prod_idgrupos" class="col-sm-2 col-form-label">Grupo:</label>
         <div class="col-sm-3">
-            <select class="form-control" name="prod_idgrupos" id="prod_idgrupos" required>
+            <select class="form-control" name="grupo_id" id="grupo_id">
                 <option value="">Selecione o grupo</option>
-                <!-- Opções seriam preenchidas dinamicamente -->
-                <option value="1">Camisetas</option>
-                <option value="2">Calças</option>
-                <option value="3">Tênis</option>
-                <!-- Adicionar outros grupos conforme necessário -->
+                {% for grupo in data.grupos %}
+                    <option value="{{ grupo.idgrupos }}">{{ grupo.grupo_descricao }}</option>
+                {% endfor %}
             </select>
         </div>
-    </div>
-
-    <!-- Subgrupo -->
-    <div class="form-group row">
-        <label for="prod_idsubgrupos" class="col-sm-2 col-form-label">Subgrupo:</label>
         <div class="col-sm-3">
-            <select class="form-control" name="prod_idsubgrupos" id="prod_idsubgrupos" required>
-                <option value="">Selecione o subgrupo</option>
-                <!-- Opções seriam preenchidas dinamicamente baseadas no grupo selecionado -->
-                <option value="1">Camiseta Básica</option>
-                <option value="2">Camiseta Polo</option>
-                <option value="3">Calça Jeans</option>
-                <!-- Adicionar outros subgrupos conforme necessário -->
-            </select>
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button"><a href='{{routes.routes.Grupos.name}}'>+</a></button>
+            </div>
         </div>
     </div>
 
-    <!-- Botão de Submit -->
     <div class="form-group row">
         <div class="col-sm-5 offset-sm-2">
             <button type="submit" class="btn btn-primary">Cadastrar Produto</button>
             {# ver esse botao <a href="{{ path('lista_produtos') }}" class="btn btn-secondary ml-2">Cancelar</a> #}
         </div>
     </div>
-</form>
 
-<!-- Adicione scripts JS se necessário -->
-{% block javascripts %}
-<script>
-// Exemplo de script para carregar subgrupos dinamicamente
-document.getElementById('prod_idgrupos').addEventListener('change', function() {
-    const grupoId = this.value;
-    const subgrupoSelect = document.getElementById('prod_idsubgrupos');
-    
-    // Limpa opções atuais
-    subgrupoSelect.innerHTML = '<option value="">Selecione o subgrupo</option>';
-    
-    if (grupoId) {
-        // Aqui você faria uma requisição AJAX para buscar os subgrupos
-        // Exemplo simplificado:
-        fetch(`/api/subgrupos/${grupoId}`)
-            .then(response => response.json())
-            .then(data => {
-                data.forEach(subgrupo => {
-                    const option = document.createElement('option');
-                    option.value = subgrupo.id;
-                    option.textContent = subgrupo.nome;
-                    subgrupoSelect.appendChild(option);
-                });
-            });
-    }
-});
-</script>
-{% endblock %}
+            </form>
+        </div>
+    </div>
+</div>
 
 {% endblock %}

@@ -17,7 +17,7 @@ use App\Model\UserModel;
             session_start();
             $this->data = [
                 'title' => 'Pagina Inicial',
-                'message' => 'Seja bem-vindo ao site Liberdade Financeira',
+                'message' => 'Seja bem-vindo a loja da AllStore',
             ];
 
             $this->db = new Db();

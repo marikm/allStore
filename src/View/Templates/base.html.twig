@@ -4,11 +4,16 @@
         <meta charset="UTF-8"> 
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <!-- CSS Bootstrap -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+
         <title>{{ data.title }}</title>
     </head> 
     <body>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container-fluid">
+            <img src="/allStore/img/ALLSTORE.png" alt="logo">
                 {% if routes.routes %}
                     {% include 'menu.html.twig' with {'routes': routes.routes, 'logged': data.logged, 'path': routes.path } %}
                 {% endif %} 
@@ -22,4 +27,8 @@
        
 
     </body>
+    
+        <!-- JavaScript Bootstrap (no final do body) -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </html>

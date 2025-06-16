@@ -6,7 +6,7 @@ class Db {
 
     public function __construct(string $user = "root", string $password = "", string $host = "localhost", string $dbname = "allstore")
     {
-        $dsn = "mysql:host=$host;dbname=$dbname";
+        $dsn = "mysql:host=$host;dbname=$dbname;charset=utf8mb4";
         $this->db = new \PDO($dsn, $user, $password);
     }
 
@@ -14,7 +14,6 @@ class Db {
     {
         $sql = "SELECT * FROM $table";
         $data = $this->executeQuery($sql)->fetchAll(\PDO::FETCH_OBJ);
-        //var_dump($result[0]->name);die;
         $result = [];
         foreach($data as $line) {
             $itemAsArray = (array) $line;
@@ -32,6 +31,13 @@ class Db {
         return $data;
     }
 
+    public function getFieldId(string $table, $id, $field): array {
+        $sql = "SELECT $id, $field FROM $table";
+        $data = $this->executeQuery($sql)->fetchAll(\PDO::FETCH_OBJ);
+
+        return $data;
+    }
+
     public function getTableByUser(string $table, string $user): array {
         $sql = "SELECT * FROM $table WHERE nome = :user";
         $data = $this->executeQuery($sql, [':user' => $user])->fetchAll(\PDO::FETCH_OBJ);
@@ -39,9 +45,9 @@ class Db {
         return $data;
     }
 
-    public function getOne(int $id, string $table): array
+    public function getOne(int $id, string $table, $field = 'id'): array
     {
-        $sql = "SELECT * FROM $table WHERE id = :id";
+        $sql = "SELECT * FROM $table WHERE $field = :id";
         return $this->executeQuery($sql, [':id' => $id])->fetch(\PDO::FETCH_ASSOC);
     }
 
@@ -63,16 +69,16 @@ class Db {
         return $this->executeNonQuery($sql);
     }
 
-    public function update(int $id, string $fields, string $values, string $table): void
+    public function update(int $id, string $fields, string $values, string $table, $id_name = 'id'): bool
     {
-        $sql = "UPDATE $table SET $fields = $values WHERE id = :id";
-        $this->executeNonQuery($sql, [':id' => $id]);
+        $sql = "UPDATE $table SET $fields = $values WHERE $id_name = :id";
+        return $this->executeNonQuery($sql, [':id' => $id]);
     }
 
-    public function delete(int $id, string $table): void
+    public function delete(int $id, string $table,  $id_name = 'id'): bool
     {
-        $sql = "DELETE FROM $table WHERE id = :id";
-        $this->executeNonQuery($sql, [':id' => $id]);
+        $sql = "DELETE FROM $table WHERE $id_name = :id";
+        return $this->executeNonQuery($sql, [':id' => $id]);
     }
 
     public function genericSelect(string $fields, string $table): array
@@ -103,4 +109,5 @@ class Db {
         $query = $this->executeQuery($sql, $params);
         return $query->rowCount() > 0;
     }
+
 }

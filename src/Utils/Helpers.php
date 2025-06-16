@@ -1,6 +1,8 @@
 <?php
 
-    namespace App\Utils\Helpers;
+    namespace App\Utils;
+
+    use App\Db\Db;
 
     class Helpers {
         

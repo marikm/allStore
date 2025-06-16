@@ -1,0 +1,155 @@
+{% extends "base.html.twig" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 font-weight-normal">Lista de Marcas</h1>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newBrandModal">
+            <i class="bi bi-plus-circle"></i> Nova Marca
+        </button>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="text-nowrap">Código</th>
+                            <th>Descrição</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in data.brands %}   
+                        <tr>
+                            <td class="fw-bold">{{ item.idmarcas }}</td>
+                            <td id="idBrand_{{ item.idmarcas }}">{{ item.marca_descricao }}</td>
+                            <td class="text-end">
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <button class="btn btn-outline-primary" value="{{ item.idmarcas }}" name="idLinha" onclick="editBrand({{ item.idmarcas}})">
+                                        <i class="bi bi-pencil"></i> Editar
+                                    </button>
+                                    <button class="btn btn-outline-danger" onclick="deleteGroup({{ item.idmarcas}})">
+                                        <i class="bi bi-trash"></i> Excluir
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Cadastro -->
+<div class="modal fade" id="newBrandModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="bi bi-tags"></i> Cadastrar Marca</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form class="form-register" id="form-register"  action="" method="post">
+                <input type="hidden" name="operation" id="operation" value="insertBrand">
+
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="brand_description" class="form-label">Descrição da Marca</label>
+                        <input type="text" class="form-control" name="brand_description" id="brand_description" 
+                            placeholder="Digite o nome da marca" required autofocus>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Salvar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{# Modal para editar Grupo #}
+
+<div class="modal fade" id="editBrandModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title"><i class="bi bi-tags"></i> Editar Registro</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form class="form-register" action="" method="post">
+                <input type="hidden" name="idmarcas_modal" id="idmarcas_modal">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="brand_description_modal" class="form-label">Descrição da Marca</label>
+                            <input type="text" class="form-control" name="brand_description_modal" id="brand_description_modal" 
+                                 placeholder="Digite o nome da marca" required autofocus >
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary" >
+                            <i class="bi bi-save"></i> Salvar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% block javascripts %}
+<script>
+    function editBrand(id) {
+        var id_cadastro = $("#idmarcas_modal").val(id);
+        var editModal = new bootstrap.Modal(document.getElementById('editBrandModal'));
+
+        $.post("Marcas", 
+            {
+                operation: 'getBrandDescription', 
+                id_cadastro: id 
+            },
+            function(data) {
+                $("#brand_description_modal").val(data);
+            }, "html");
+
+            editModal.show();
+
+        
+        $('#editBrandModal').submit(function() {
+            var brand_description_modal = $("#brand_description_modal").val();
+
+            $.post("Marcas", 
+            {operation: 'updateBrand', 
+            id_cadastro: id, 
+            descricao: brand_description_modal  
+            },
+        function(data){
+            alert(data)
+        }, "html");
+            });
+    }
+
+    function deleteGroup(id) {
+        var id = id;
+        $.post("Marcas", 
+            {operation: 'deleteBrand', 
+            id_cadastro: id
+            },
+        function(data){
+            alert(data);
+            location.reload(); // atualiza pagina
+        }, "html");
+    }
+</script>
+{% endblock %}
+
+{% endblock %}

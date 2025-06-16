@@ -2,10 +2,8 @@
     namespace App\Model;
 
     use App\Db\Db;
-use App\Utils\Helpers\Helpers;
-use TypeError;
-
-    require_once("../Utils/Helpers.php");
+    use App\Utils\Helpers;
+    use TypeError;
 
     class ProductModel {
 
@@ -24,11 +22,10 @@ use TypeError;
             $reg["prod_genero"] = Helpers::addQuotes($data["prod_genero"]);
             $reg["prod_idmarcas"] = Helpers::intFormat($data["prod_idmarcas"]);
             $reg["prod_idgrupos"] =  Helpers::intFormat($data["prod_idgrupos"]);
-            $reg["prod_idsubgrupos"] = Helpers::intFormat($data["prod_idsubgrupos"]);
 
             $keys = Helpers::getArrayKeysValues($reg);
             $values = Helpers::getArrayKeysValues($reg, "values");
-            $db->insert($keys, $values, "usuarios");
+            $db->insert($keys, $values, "produtos");
 
         }
     }
