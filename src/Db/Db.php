@@ -33,7 +33,7 @@ class Db {
 
     public function getFieldId(string $table, $id, $field): array {
         $sql = "SELECT $id, $field FROM $table";
-        $data = $this->executeQuery($sql)->fetchAll(\PDO::FETCH_OBJ);
+        $data = $this->executeQuery($sql)->fetchAll(\PDO::FETCH_KEY_PAIR);
 
         return $data;
     }
@@ -92,6 +92,11 @@ class Db {
         $sql = "SELECT $fields FROM $table WHERE $where";
         return $this->executeQuery($sql)->fetchAll();
     }
+
+    public function lastInsertId() {
+        return $this->db->lastInsertId();
+    }
+
     //
     // Ambos são metodos que vão executar uma sentença sql
     // o nonquery vai ser executado quando houver processamento no servidor
@@ -109,5 +114,6 @@ class Db {
         $query = $this->executeQuery($sql, $params);
         return $query->rowCount() > 0;
     }
+
 
 }

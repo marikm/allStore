@@ -12,14 +12,15 @@
         }
 
         public function getAllGroups(Db $db) {
-           return $db->getTable("grupos");
+           return $db->getFieldId("grupos", "idgrupos", "grupo_descricao");
         }
         
-        public function insertGroup(array $data, Db $db) {
-            $description = $data["grupo_descricao"];
-           
-            $db->insert("grupo_descricao", "'$description'", "grupos");
-
+        public function insertGroup(string $data, Db $db) {
+           $success = $db->insert("grupo_descricao", "'$data'", "grupos");
+            if($success) {
+                return true;
+            }
+            return false;
         }
 
         public function editGroup($id, string $data, Db $db) {

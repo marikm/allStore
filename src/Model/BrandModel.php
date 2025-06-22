@@ -12,7 +12,7 @@
         }
 
         public function getAllBrands(Db $db) {
-           return $db->getTable("marcas");
+           return $db->getFieldId("marcas", "idmarcas", "marca_descricao");
         }
         
         public function insertBrand(array $data, Db $db) {

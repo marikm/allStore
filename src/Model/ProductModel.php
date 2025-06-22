@@ -26,6 +26,9 @@
             $keys = Helpers::getArrayKeysValues($reg);
             $values = Helpers::getArrayKeysValues($reg, "values");
             $db->insert($keys, $values, "produtos");
+        }
 
+        public function getById(Db $db, $id){
+            return $db->getOne($id, "produtos", "idprodutos");
         }
     }

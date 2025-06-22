@@ -18,21 +18,26 @@
         public function __construct() {
             $this->db = new Db();
 
-            if($_SERVER['REQUEST_METHOD'] == 'POST') {
-                if(isset($_POST['grupo_descricao'])) {
-                    $this->grupo_descricao = filter_input(INPUT_POST, "grupo_descricao", FILTER_SANITIZE_STRING);
-                }
-                
-            }
             $this->groups = (new GroupModel())->getAllGroups($this->db);
              
 
         }
 
-        public function insertGroup() {
-                $this->groupModel = (new GroupModel())->insertGroup($this->data, $this->db);
-                header('Location: ' . $_SERVER["REQUEST_URI"]); // Redireciona para a mesma URL
-
+        public function insertGroup($grupo_descricao) {
+            $success = (new GroupModel())->insertGroup($grupo_descricao, $this->db);
+            if ($success) {
+                header('Content-Type: application/json');
+                echo json_encode([
+                    'id' => $this->db->lastInsertId(),
+                    'nome' => $grupo_descricao,
+                    'redirect' => $_SERVER["REQUEST_URI"]
+                ]);
+                exit;
+            }
+            
+            // Se falhar
+            echo "Não foi possivel cadastrar registro";
+            exit;
         }
 
         public function getGroupDescription(int $id) {
@@ -69,7 +74,12 @@
         public function runFunction($operation) {
 
             if($operation == "insertGroup") {
-                $this->insertGroup();
+
+                $grupo_descricao = filter_input(INPUT_POST, "grupo_descricao");
+
+                $this->insertGroup($grupo_descricao);
+                
+                exit;
             }
 
             if($operation == "getGroupDescription") {
@@ -94,7 +104,8 @@
         }
 
         public function index() {
-            $this->data["grupo_descricao"] = $this->grupo_descricao;
+            // $this->data["grupo_descricao"] = $this->grupo_descricao;
+             $this->data["grupo_descricao"] = "";
             $operation = filter_input(INPUT_POST, 'operacao');
             if(isset($operation)){
                 $this->runFunction($operation);

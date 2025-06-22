@@ -20,6 +20,7 @@ use App\Model\ProductModel;
         protected $prod_idmarcas;
         protected $prod_idgrupos;
         protected $prod_idsubgrupos;
+        public $prodById;
 
         public function __construct() {
             $this->db = new Db();
@@ -48,8 +49,14 @@ use App\Model\ProductModel;
 
         public function insertProduct() {
             $this->productModel = (new ProductModel())->insertProduct($this->data, $this->db);
+            header('Location: ' . $_SERVER["REQUEST_URI"]); // Redireciona para a mesma URL
 
         }
+
+        public function getProductDescription($id){
+            $this->prodById = (new ProductModel())->getById($this->db, $id);
+        }
+        
 
         public function runFunction($operation) {
 
@@ -57,11 +64,9 @@ use App\Model\ProductModel;
                 $this->insertProduct();
             }
 
-            if($operation == "getBrandDescription") {
+            if($operation == "getProductDescription") {
                 $id = filter_input(INPUT_POST, 'id_cadastro', FILTER_VALIDATE_INT);
-                $this->brand_description_edit = $this->getBrandDescription($id); 
-            
-                echo $this->brand_description_edit;
+                echo  $this->getProductDescription($id);
                 exit;
             }
 
@@ -98,6 +103,8 @@ use App\Model\ProductModel;
             if(isset($operation)){
                 $this->runFunction($operation);
             }
+
+            $this->data["products"] = (new ProductModel())->getAllProducts($this->db);
             
             return $this->data;
         }

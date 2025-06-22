@@ -17,14 +17,28 @@
                         <tr>
                             <th class="text-nowrap">Código</th>
                             <th>Descrição</th>
+                            <th>Valor Un</th>
+                            <th>Cor</th>
+                            <th>Gênero</th>
+                            <th>Marca</th>
+                            <th>Grupo</th>
                             <th></th>
                         </tr>
                     </thead>
+             {# {{ dump(item.idmarcas) }} #}
+                {# {{ dump(data.marcas) }}  #}
                     <tbody>
-                        {% for item in data.brands %}   
+                        {% for item in data.products %}   
                         <tr>
-                            <td class="fw-bold">{{ item.idmarcas }}</td>
-                            <td id="idBrand_{{ item.idmarcas }}">{{ item.marca_descricao }}</td>
+                            
+                            <td class="fw-bold">{{ item.idprodutos }}</td>
+                            <td class="fw-bold">{{ item.prod_descricao}}</td>
+                            <td class="fw-bold">{{ item.prod_vlr_un }}</td>
+                            <td class="fw-bold">{{ item.prod_cor }}</td>
+                            <td class="fw-bold">{{ item.prod_genero }}</td>
+                            <td id="idBrand_{{ item.prod_idmarcas }}">{{ data.marcas[item.prod_idmarcas] }}</td>
+                            <td id="idGroup_{{ item.prod_idgrupos }}">{{ data.grupos[item.prod_idgrupos] }}</td>
+
                             <td class="text-end">
                                 <div class="btn-group btn-group-sm" role="group">
                                     <button class="btn btn-outline-primary" value="{{ item.idmarcas }}" name="idLinha" onclick="editBrand({{ item.idmarcas}})">
@@ -45,99 +59,267 @@
 </div>
 
 
-<!-- Modal de Cadastro -->
-<div class="modal fade" id="newClotheModal" tabindex="-1" aria-hidden="true">
+<!-- Modal de Cadastro de ROUPA - Versão Melhorada -->
+<div class="modal fade" id="newClotheModal" tabindex="-1" aria-labelledby="newClotheModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="newClotheModalLabel">
+                    <i class="bi bi-tags me-2"></i>Cadastrar Nova Roupa
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                <form class="form-register needs-validation" id="form-register" action="" method="post" novalidate>
+                    <input type="hidden" name="operation" id="operation" value="insertProduct">
+                    
+                    <!-- Seção 1: Informações Básicas -->
+                    <div class="mb-4">
+                        <h6 class="text-primary mb-3 border-bottom pb-2">
+                            <i class="bi bi-info-circle"></i> Informações Básicas
+                        </h6>
+                        
+                        <div class="row g-3">
+                            <!-- Descrição -->
+                            <div class="col-md-12">
+                                <label for="prod_descricao" class="form-label">Descrição do Produto*</label>
+                                <input type="text" class="form-control" name="prod_descricao" id="prod_descricao" 
+                                       placeholder="Ex: Camiseta básica manga curta" required>
+                                <div class="invalid-feedback">Por favor, informe a descrição do produto.</div>
+                            </div>
+                            
+                            <!-- Valor e Cor -->
+                            <div class="col-md-6">
+                                <label for="prod_vlr_un" class="form-label">Valor Unitário*</label>
+                                <div class="input-group has-validation">
+                                    <span class="input-group-text">R$</span>
+                                    <input type="number" step="0.01" min="0" class="form-control" name="prod_vlr_un" 
+                                           id="prod_vlr_un" placeholder="0.00" required>
+                                    <div class="invalid-feedback">Informe um valor válido.</div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="prod_cor" class="form-label">Cor*</label>
+                                <input type="text" class="form-control" name="prod_cor" id="prod_cor" 
+                                       placeholder="Ex: Azul marinho" required>
+                                <div class="invalid-feedback">Informe a cor do produto.</div>
+                            </div>
+                            
+                            <!-- Gênero -->
+                            <div class="col-md-6">
+                                <label for="prod_genero" class="form-label">Gênero*</label>
+                                <select class="form-select" name="prod_genero" id="prod_genero" required>
+                                    <option value="" disabled selected>Selecione...</option>
+                                    <option value="masculino">Masculino</option>
+                                    <option value="feminino">Feminino</option>
+                                    <option value="unissex">Unissex</option>
+                                    <option value="infantil">Infantil</option>
+                                </select>
+                                <div class="invalid-feedback">Selecione o gênero.</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Seção 2: Classificação -->
+                    <div class="mb-4">
+                        <h6 class="text-primary mb-3 border-bottom pb-2">
+                            <i class="bi bi-tag"></i> Classificação
+                        </h6>
+                        
+                        <div class="row g-3">
+                            <!-- Marca -->
+                            <div class="col-md-6">
+                                <label for="prod_idmarcas" class="form-label">Marca*</label>
+                                <div class="input-group">
+                                    <select class="form-select" name="prod_idmarcas" id="prod_idmarcas" required>
+                                        <option value="" disabled selected>Selecione a marca</option>
+                                        {% for idmarcas, marca_descricao in data.marcas %}
+                                            <option value="{{ idmarcas }}">{{ marca_descricao }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <a href="{{routes.routes.Marcas.name}}" class="btn btn-outline-primary" type="button" 
+                                       title="Adicionar nova marca">
+                                        <i class="bi bi-plus-lg"></i>
+                                    </a>
+                                </div>
+                                <div class="invalid-feedback">Selecione uma marca.</div>
+                            </div>
+                            
+                            <!-- Grupo -->
+                            <div class="col-md-6">
+                                <label for="prod_idgrupos" class="form-label">Grupo</label>
+                                <div class="input-group">
+                                    <select class="form-select" name="prod_idgrupos" id="prod_idgrupos">
+                                        <option value="" selected>Selecione o grupo</option>
+                                        {% for idgrupos, grupo_descricao in data.grupos %}
+                                            <option value="{{ idgrupos }}">{{ grupo_descricao }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button class="btn btn-outline-primary" type="button" onclick="openGroupModal()" 
+                                            title="Adicionar novo grupo">
+                                        <i class="bi bi-plus-lg"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Botões de Ação -->
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                            <i class="bi bi-x-lg me-1"></i> Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-1"></i> Cadastrar Produto
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal de Cadastro de Grupo -->
+<div class="modal fade" id="newGroupModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title"><i class="bi bi-tags"></i> Cadastrar Roupa</h5>
+                <h5 class="modal-title"><i class="bi bi-tags"></i> Cadastrar Grupo</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form class="form-register" id="form-register"  action="" method="post">
-                <input type="hidden" name="operation" id="operation" value="insertClothe">
-
-                 <div class="form-group row">
-        <label for="prod_descricao" class="col-sm-2 col-form-label">Descrição:</label>
-        <div class="col-sm-5">
-            <input type="text" class="form-control" name="prod_descricao" id="prod_descricao" 
-                   placeholder="Nome do produto" required autofocus/>
-        </div>
-    </div>
-    <div class="form-group row">
-        <label for="prod_vlr_un" class="col-sm-2 col-form-label">Valor Unitário:</label>
-        <div class="col-sm-3">
-            <div class="input-group">
-                <div class="input-group-prepend">
-                    <span class="input-group-text">R$</span>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="grupo_descricao" class="form-label">Descrição do Grupo</label>
+                        <input type="text" class="form-control" name="grupo_descricao" id="grupo_descricao" 
+                            placeholder="Digite o nome do grupo" required autofocus>
+                    </div>
                 </div>
-                <input type="number" step="0.01" class="form-control" name="prod_vlr_un" id="prod_vlr_un" 
-                       placeholder="0.00" required/>
-            </div>
-        </div>
-    </div>
-    <div class="form-group row">
-        <label for="prod_cor" class="col-sm-2 col-form-label">Cor:</label>
-        <div class="col-sm-3">
-            <input type="text" class="form-control" name="prod_cor" id="prod_cor" 
-                   placeholder="Cor do produto" required/>
-        </div>
-    </div>
-    <div class="form-group row">
-        <label for="prod_genero" class="col-sm-2 col-form-label">Gênero:</label>
-        <div class="col-sm-3">
-            <select class="form-control" name="prod_genero" id="prod_genero" required>
-                <option value="">Selecione...</option>
-                <option value="masculino">Masculino</option>
-                <option value="feminino">Feminino</option>
-                <option value="unissex">Unissex</option>
-                <option value="infantil">Infantil</option>  
-            </select>
-        </div>
- 
-    </div> 
-    <div class="form-group row">
-        <label for="prod_idmarcas" class="col-sm-2 col-form-label">Marca:</label>
-        <div class="col-sm-3">
-            <select class="form-control" name="prod_idmarcas" id="prod_idmarcas" required>
-                <option value="">Selecione a marca</option>
-                {% for marca in data.marcas %}
-                    <option value="{{ marca.idmarcas }}">{{ marca.marca_descricao }}</option>
-                {% endfor %}
-            </select>
-        </div>
-         <div class="col-sm-3">
-            <div class="input-group-append">
-                <button class="btn btn-outline-secondary" type="button"><a href='{{routes.routes.Marcas.name}}'>+</a></button>
-            </div>
-        </div>
-    </div>
-    <div class="form-group row">
-        <label for="prod_idgrupos" class="col-sm-2 col-form-label">Grupo:</label>
-        <div class="col-sm-3">
-            <select class="form-control" name="grupo_id" id="grupo_id">
-                <option value="">Selecione o grupo</option>
-                {% for grupo in data.grupos %}
-                    <option value="{{ grupo.idgrupos }}">{{ grupo.grupo_descricao }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="col-sm-3">
-            <div class="input-group-append">
-                <button class="btn btn-outline-secondary" type="button"><a href='{{routes.routes.Grupos.name}}'>+</a></button>
-            </div>
-        </div>
-    </div>
-
-    <div class="form-group row">
-        <div class="col-sm-5 offset-sm-2">
-            <button type="submit" class="btn btn-primary">Cadastrar Produto</button>
-            {# ver esse botao <a href="{{ path('lista_produtos') }}" class="btn btn-secondary ml-2">Cancelar</a> #}
-        </div>
-    </div>
-
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary" id="btnSaveGroup">
+                        <i class="bi bi-save"></i> Salvar
+                    </button>
+                </div>
             </form>
         </div>
     </div>
 </div>
+
+<!-- Modal de Cadastro de Marca-->
+<div class="modal fade" id="newBrandModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="bi bi-tags"></i> Cadastrar Marca</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form class="form-register" id="form-register"  action="" method="post">
+                <input type="hidden" name="operation" id="operation" value="insertBrand">
+
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="brand_description" class="form-label">Descrição da Marca</label>
+                        <input type="text" class="form-control" name="brand_description" id="brand_description" 
+                            placeholder="Digite o nome da marca" required autofocus>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary"  id="btnSave">
+                        <i class="bi bi-save"></i> Salvar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% block javascripts %}
+<script>
+ $(document).ready(function() {
+        // Initialize modal instance once
+        const groupModal = new bootstrap.Modal(document.getElementById('newGroupModal'));
+        let mainProductModal = null;
+        
+        // Set up click handler only once
+        $('#btnSaveGroup').on('click', function() {
+            const grupo_descricao = $('#grupo_descricao').val().trim();
+            
+            // Validation
+            if (!grupo_descricao) {
+                alert('Por favor, informe um nome para o grupo');
+                return;
+            }
+            
+            // Disable button during processing
+            const $btn = $(this);
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status"></span> Salvando...');
+            $.post("Grupos",
+                    {operacao: 'insertGroup',
+                    grupo_descricao: grupo_descricao}, 
+                    function(data) {
+                        if (data && data.id && data.nome) {
+                        // Add new option and select it
+                        $('#prod_idgrupos')
+                            .append($('<option></option>')
+                                .val(data.id)
+                                .text(data.nome)
+                                .prop('selected', true));
+                        
+                        // Hide group modal
+                        groupModal.hide();
+                        
+                        // Show main product modal if exists
+                        if (!mainProductModal) {
+                            mainProductModal = bootstrap.Modal.getInstance(document.getElementById('newClotheModal'));
+                        }
+                        if (mainProductModal) {
+                            mainProductModal.show();
+                        }
+                    } else {
+                        alert('Resposta inválida do servidor');
+                    }
+                    }, "json");
+
+                    
+            
+        });
+    });
+
+    function openGroupModal() {
+        // Limpa o campo de descrição do grupo
+        $('#grupo_descricao').val('').focus();
+        
+        // Show modal (the instance was already created in document.ready)
+        const modal = bootstrap.Modal.getInstance(document.getElementById('newGroupModal'));
+        if (modal) {
+            modal.show();
+        } else {
+            new bootstrap.Modal(document.getElementById('newGroupModal')).show();
+        }
+    }
+
+    function openBrandModal() {
+        // Clear input field when opening modal
+        $('#brand_description').val('').focus();
+        
+        // Show modal (the instance was already created in document.ready)
+        const modal = bootstrap.Modal.getInstance(document.getElementById('newBrandModal'));
+        if (modal) {
+            modal.show();
+        } else {
+            new bootstrap.Modal(document.getElementById('newBrandModal')).show();
+        }
+    }
+
+</script>
+{% endblock %}
 
 {% endblock %}

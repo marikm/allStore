@@ -1,0 +1,26 @@
+/* Adicionar ao seu arquivo CSS */
+.modal-content {
+    border: none;
+    border-radius: 0.5rem;
+}
+
+.modal-header {
+    border-bottom: none;
+    padding: 1.2rem 1.5rem;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.invalid-feedback {
+    font-size: 0.85rem;
+}
+
+.form-section {
+    margin-bottom: 1.5rem;
+}
+
+.form-section h6 {
+    font-weight: 600;
+}
