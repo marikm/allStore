@@ -15,10 +15,13 @@
            return $db->getFieldId("marcas", "idmarcas", "marca_descricao");
         }
         
-        public function insertBrand(array $data, Db $db) {
-            $description = $data["brand_description"];
-           
-            $db->insert("marca_descricao", "'$description'", "marcas");
+        public function insertBrand(string $data, Db $db) {
+            $success = $db->insert("marca_descricao", "'$data'", "marcas");
+
+             if($success) {
+                return true;
+            }
+            return false;
 
         }
 

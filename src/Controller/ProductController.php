@@ -3,8 +3,8 @@
     namespace App\Controller;
 
     use App\Db\Db;
-use App\Model\BrandModel;
-use App\Model\ProductModel;
+    use App\Model\BrandModel;
+    use App\Model\ProductModel;
     use App\Model\GroupModel;
 
     class ProductController {
@@ -20,9 +20,11 @@ use App\Model\ProductModel;
         protected $prod_idmarcas;
         protected $prod_idgrupos;
         protected $prod_idsubgrupos;
+        protected $foto;
         public $prodById;
 
         public function __construct() {
+            session_start();
             $this->db = new Db();
             if($_SERVER['REQUEST_METHOD'] == 'POST') {
                 if(isset($_POST['prod_descricao'])) {
@@ -43,6 +45,12 @@ use App\Model\ProductModel;
                 if(isset($_POST['prod_idgrupos'])) {
                     $this->prod_idgrupos = filter_input(INPUT_POST, "prod_idgrupos", FILTER_SANITIZE_NUMBER_INT);
                 }
+                // if(!empty($_FILES["foto"]["name"])){
+                //     $foto = str_replace(" ","_",$_FILES["foto"]["name"]);
+                //     $extensao = pathinfo($foto,PATHINFO_EXTENSION);
+                //     $this->foto = $foto . "." . $extensao;
+                //     move_uploaded_file($_FILES["foto"]["tmp_name"],"../img/".$this->foto);
+                // }
                 
             }
         }
@@ -85,6 +93,8 @@ use App\Model\ProductModel;
         }
 
         public function index() {
+            $this->data['admin'] = $_SESSION['admin'];
+            $this->data['logged'] = $_SESSION['logged'];
             // Grupos e Marcas cadastrados
             $grupos = (new GroupModel())->getAllGroups($this->db);
             $marcas = (new BrandModel())->getAllBrands($this->db);
@@ -96,6 +106,7 @@ use App\Model\ProductModel;
             $this->data['prod_idmarcas'] = $this->prod_idmarcas;
             $this->data['prod_idgrupos' ]=$this->prod_idgrupos;
             $this->data['prod_idsubgrupos'] =$this->prod_idsubgrupos;
+            // $this->data['foto'] =$this->foto;
             $this->data['grupos'] = $grupos;
             $this->data['marcas'] = $marcas;
 

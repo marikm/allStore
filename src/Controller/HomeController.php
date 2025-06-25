@@ -25,14 +25,16 @@ use App\Model\UserModel;
         }
 
         public function index() {
-            // if(!isset( $_SESSION['logged'])){
-            //     $_SESSION['logged'] = false;
-            // }
+            if(!isset( $_SESSION['logged'])){
+                $_SESSION['logged'] = false;
+            }
 
-            // if($_SESSION['logged'] == true) {
-            //     $this->data['greeting'] = "Bem vindo(a) " . $_SESSION['name'];
-            // }
-            // $this->data['logged'] = $_SESSION['logged'];
+            if($_SESSION['logged'] == true) {
+                $this->data['greeting'] = "Bem vindo(a) " . $_SESSION['name'];
+            }
+            $this->data['logged'] = $_SESSION['logged'];
+            $this->data['admin'] = $_SESSION['admin'];
+
             
 
             return $this->data;

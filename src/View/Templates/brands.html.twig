@@ -21,16 +21,16 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for item in data.brands %}   
+                        {% for id, descricao in data.brands %}   
                         <tr>
-                            <td class="fw-bold">{{ item.idmarcas }}</td>
-                            <td id="idBrand_{{ item.idmarcas }}">{{ item.marca_descricao }}</td>
+                            <td class="fw-bold">{{ id }}</td>
+                            <td id="idBrand_{{ id }}">{{ descricao }}</td>
                             <td class="text-end">
                                 <div class="btn-group btn-group-sm" role="group">
-                                    <button class="btn btn-outline-primary" value="{{ item.idmarcas }}" name="idLinha" onclick="editBrand({{ item.idmarcas}})">
+                                    <button class="btn btn-outline-primary" value="{{ id }}" name="idLinha" onclick="editBrand({{ id }})">
                                         <i class="bi bi-pencil"></i> Editar
                                     </button>
-                                    <button class="btn btn-outline-danger" onclick="deleteGroup({{ item.idmarcas}})">
+                                    <button class="btn btn-outline-danger" onclick="deleteGroup({{ id }})">
                                         <i class="bi bi-trash"></i> Excluir
                                     </button>
                                 </div>

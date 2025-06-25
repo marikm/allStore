@@ -16,6 +16,8 @@
        
 
         public function __construct() {
+            session_start();
+
             $this->db = new Db();
 
             $this->groups = (new GroupModel())->getAllGroups($this->db);
@@ -106,6 +108,9 @@
         public function index() {
             // $this->data["grupo_descricao"] = $this->grupo_descricao;
              $this->data["grupo_descricao"] = "";
+            $this->data['logged'] = $_SESSION['logged'];
+             $this->data['admin'] = $_SESSION['admin'];
+             
             $operation = filter_input(INPUT_POST, 'operacao');
             if(isset($operation)){
                 $this->runFunction($operation);

@@ -16,6 +16,7 @@
        
 
         public function __construct() {
+            session_start();
             $this->db = new Db();
 
             if($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -29,9 +30,20 @@
 
         }
 
-        public function insertBrand() {
-            $this->brandModel = (new BrandModel())->insertBrand($this->data, $this->db);
-            header('Location: ' . $_SERVER["REQUEST_URI"]); // Redireciona para a mesma URL
+        public function insertBrand($description) {
+            $reg = (new BrandModel())->insertBrand($description, $this->db);
+            if($reg) {
+                header('Content-Type: application/json');
+                echo json_encode([
+                    'id' => $this->db->lastInsertId(),
+                    'nome' => $this->brand_description,
+                    'redirect' => $_SERVER["REQUEST_URI"]
+                ]);
+                exit;
+            }
+
+            echo "Não foi possivel inserir marca";
+            exit;
 
         }
 
@@ -69,7 +81,10 @@
         public function runFunction($operation) {
 
             if($operation == "insertBrand") {
-                $this->insertBrand();
+                $description = filter_input(INPUT_POST, "brand_description");
+
+                $this->insertBrand($description);
+                exit;
             }
 
             if($operation == "getBrandDescription") {
@@ -95,6 +110,9 @@
         }
 
         public function index() {
+            $this->data['admin'] = $_SESSION['admin'];
+            $this->data['logged'] = $_SESSION['logged'];
+
             $this->data["brand_description"] = $this->brand_description;
             $operation = filter_input(INPUT_POST, 'operation');
             if(isset($operation)){

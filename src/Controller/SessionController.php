@@ -12,11 +12,12 @@
             }
         }
 
-        public function setLogged($name, $email) : void {
+        public function setLogged($name, $email, $admin) : void {
             $_SESSION['name'] = $name;
             $_SESSION['email'] = $email;
             $_SESSION['logged'] = true;
-            header('Location: /');
+            $_SESSION['admin'] = $admin;
+            header('Location: /allStore/src/');
 
         }
 
@@ -24,7 +25,8 @@
             $_SESSION['name'] = null;
             $_SESSION['email'] = null;
             $_SESSION['logged'] = false;
-            header('Location: /');
+            $_SESSION['admin'] = false;
+            header('Location: /allStore/src/');
         }
 
         public function getLogged(): bool {

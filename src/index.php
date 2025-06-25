@@ -23,7 +23,8 @@ try {
     
     // Obtém os dados do controller
     $data = $controller->index();
-    
+    // var_dump($_SESSION);
+    // var_dump($data);
     // Renderiza o template Twig
     $twig = new TwigUtils();
 

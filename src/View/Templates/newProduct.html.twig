@@ -70,7 +70,7 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
             </div>
             <div class="modal-body">
-                <form class="form-register needs-validation" id="form-register" action="" method="post" novalidate>
+                <form class="form-register needs-validation" id="form-register" action="" method="post" enctype="multipart/form-data" novalidate>
                     <input type="hidden" name="operation" id="operation" value="insertProduct">
                     
                     <!-- Seção 1: Informações Básicas -->
@@ -138,10 +138,10 @@
                                             <option value="{{ idmarcas }}">{{ marca_descricao }}</option>
                                         {% endfor %}
                                     </select>
-                                    <a href="{{routes.routes.Marcas.name}}" class="btn btn-outline-primary" type="button" 
-                                       title="Adicionar nova marca">
+                                   <button class="btn btn-outline-primary" type="button" onclick="openBrandModal()" 
+                                            title="Adicionar novo grupo">
                                         <i class="bi bi-plus-lg"></i>
-                                    </a>
+                                    </button>
                                 </div>
                                 <div class="invalid-feedback">Selecione uma marca.</div>
                             </div>
@@ -165,6 +165,12 @@
                         </div>
                     </div>
                     
+                    <div class="col-md-12">
+                        <label for="foto">Foto</label>
+                        <input type="file" name="foto" id="foto">
+                    </div>
+                    
+                
                     <!-- Botões de Ação -->
                     <div class="d-flex justify-content-end gap-2 mt-4">
                         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
@@ -174,6 +180,9 @@
                             <i class="bi bi-check-lg me-1"></i> Cadastrar Produto
                         </button>
                     </div>
+
+                    
+            </div>
                 </form>
             </div>
         </div>
@@ -232,7 +241,7 @@
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         <i class="bi bi-x-circle"></i> Cancelar
                     </button>
-                    <button type="submit" class="btn btn-primary"  id="btnSave">
+                    <button type="button" class="btn btn-primary"  id="btnSaveBrand">
                         <i class="bi bi-save"></i> Salvar
                     </button>
                 </div>
@@ -244,39 +253,35 @@
 {% block javascripts %}
 <script>
  $(document).ready(function() {
-        // Initialize modal instance once
-        const groupModal = new bootstrap.Modal(document.getElementById('newGroupModal'));
+        // Inicialização de modal de grupo, marca e produto
         let mainProductModal = null;
-        
-        // Set up click handler only once
+        const groupModal = new bootstrap.Modal(document.getElementById('newGroupModal'));
+        const brandModal = new bootstrap.Modal(document.getElementById('newBrandModal'));
+       
         $('#btnSaveGroup').on('click', function() {
             const grupo_descricao = $('#grupo_descricao').val().trim();
             
-            // Validation
+            // Valida se campo de descrição do grupo foi preenchido
             if (!grupo_descricao) {
                 alert('Por favor, informe um nome para o grupo');
                 return;
             }
-            
-            // Disable button during processing
-            const $btn = $(this);
-            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status"></span> Salvando...');
+        
             $.post("Grupos",
                     {operacao: 'insertGroup',
                     grupo_descricao: grupo_descricao}, 
                     function(data) {
                         if (data && data.id && data.nome) {
-                        // Add new option and select it
+                        // Seleciona no modal de produto o grupo cadastrado
                         $('#prod_idgrupos')
                             .append($('<option></option>')
                                 .val(data.id)
                                 .text(data.nome)
                                 .prop('selected', true));
                         
-                        // Hide group modal
+                        // Esconde modal de cadastro de grupo
                         groupModal.hide();
                         
-                        // Show main product modal if exists
                         if (!mainProductModal) {
                             mainProductModal = bootstrap.Modal.getInstance(document.getElementById('newClotheModal'));
                         }
@@ -287,9 +292,42 @@
                         alert('Resposta inválida do servidor');
                     }
                     }, "json");
+        });
 
-                    
+        $('#btnSaveBrand').on('click', function() {
+            const brand_description = $('#brand_description').val().trim();
             
+            // Valida se campo de descrição da marca foi preenchido
+            if (!brand_description) {
+                alert('Por favor, informe um nome para a marca');
+                return;
+            }
+        
+            $.post("Marcas",
+                    {operation: 'insertBrand',
+                    brand_description: brand_description}, 
+                    function(data) {
+                        if (data && data.id && data.nome) {
+                        // Seleciona no modal de produto o grupo cadastrado
+                        $('#prod_idmarcas')
+                            .append($('<option></option>')
+                                .val(data.id)
+                                .text(data.nome)
+                                .prop('selected', true));
+                        
+                        // Esconde modal de cadastro de grupo
+                        groupModal.hide();
+                        
+                        if (!mainProductModal) {
+                            mainProductModal = bootstrap.Modal.getInstance(document.getElementById('newClotheModal'));
+                        }
+                        if (mainProductModal) {
+                            mainProductModal.show();
+                        }
+                    } else {
+                        alert('Resposta inválida do servidor');
+                    }
+                    }, "json");
         });
     });
 

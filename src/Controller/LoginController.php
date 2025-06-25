@@ -35,17 +35,24 @@ use App\Model\UserModel;
                         $this->data['error'] = $login->getErrorMessage($name, $pass, $this->db);
                         return $this->data;
                     }
+
+                    $userAdmin = $login->verifyAdminUser($this->db, $_POST['name']);
+                  
                     
                     $email = $login->getUserNameEmail($this->db, $name)['email'];
                     $session = new SessionController();
-                    $session->setLogged($name, $email);
+                    $session->setLogged($name, $email, $userAdmin);
                     
                     $this->data = [
                         'name' => $_SESSION['name'],
                         'email' => $_SESSION['email'],
                         'logged' => true,
+                        'admin' => $_SESSION['admin']
                     ];
+
+                    
                 }
+                
                 return $this->data;
             }
         }

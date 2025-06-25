@@ -62,4 +62,9 @@
             
             return $userData;
         }
+
+        public function verifyAdminUser(Db $db, string $nome){
+            $reg = $db->getOneUser($nome, "usuarios");
+            return $reg["tipoadmin"] > 0;
+        }
     }
